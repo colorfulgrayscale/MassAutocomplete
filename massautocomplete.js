@@ -46,7 +46,9 @@ angular.module('MassAutoComplete', [])
         debounce_position: _user_options.debounce_position || 150,
         debounce_attach: _user_options.debounce_attach || 300,
         debounce_suggest: _user_options.debounce_suggest || 200,
-        debounce_blur: _user_options.debounce_blur || 150
+        debounce_blur: _user_options.debounce_blur || 150,
+        left: _user_options.left || null,
+        top: _user_options.top || null
       };
 
       var current_element,
@@ -57,6 +59,7 @@ angular.module('MassAutoComplete', [])
           last_selected_value;
 
       $scope.show_autocomplete = false;
+      $scope.user_options = user_options;
 
       // Debounce - taken from underscore
       function debounce(func, wait, immediate) {
@@ -78,12 +81,16 @@ angular.module('MassAutoComplete', [])
         var rect = current_element[0].getBoundingClientRect(),
             scrollTop = $document[0].body.scrollTop || $document[0].documentElement.scrollTop || $window.pageYOffset,
             scrollLeft = $document[0].body.scrollLeft || $document[0].documentElement.scrollLeft || $window.pageXOffset,
-            container = $scope.container[0];
+            container = $scope.container[0],
+            top = rect.top + rect.height + scrollTop + 'px',
+            left = rect.left + scrollLeft + 'px';
 
-        container.style.top = rect.top + rect.height + scrollTop + 'px';
-        container.style.left = rect.left + scrollLeft + 'px';
+        container.style.top = $scope.user_options.top || top;
+        container.style.left = $scope.user_options.left || left;
+
         container.style.width = rect.width + 'px';
       }
+
       var position_autocomplete = debounce(_position_autocomplete, user_options.debounce_position);
 
       // Attach autocomplete behaviour to an input element.
@@ -279,11 +286,11 @@ angular.module('MassAutoComplete', [])
 
             // Navigate the menu when it's open. When it's not open fall back
             // to default behavior.
-            case KEYS.TAB:
-              if (!$scope.show_autocomplete)
-                break;
+            // case KEYS.TAB:
+            //   if (!$scope.show_autocomplete)
+            //     break;
 
-              e.preventDefault();
+            //   e.preventDefault();
               /* falls through */
 
             // Open the menu when results exists but are not displayed. Or,
